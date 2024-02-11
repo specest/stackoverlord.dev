@@ -7,6 +7,7 @@ networks:
     # network for the app
   backend:
 
+
 services:
   # The Wordpress CMS itself
   wordpress:
@@ -19,8 +20,11 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    env_file:
-      - ./.env
+    # DNS resolution is very slow in the container. Specify google DNS to speed it up significantly. 
+    # Note: investigate why that is the case. 
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     environment:
       # Connect WordPress to the database
       WORDPRESS_DB_HOST: wp_db:3306
@@ -30,6 +34,7 @@ services:
     volumes:
       # link the content of WordPress in a directory to enable local modifications
       - ./wordpress:/var/www/html
+      # - wordpress:/var/www/html
     networks:
       - traefik
       - backend
@@ -65,8 +70,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    env_file:
-      - ./.env
     environment:
       # Connect WordPrerss to the database
       MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
@@ -91,8 +94,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    env_file:
-      - ./.env
     ports:
       - "6379"
     networks:
@@ -117,8 +118,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    env_file:
-      - ./.env
     environment:
       - PMA_ARBITRARY=1
       - PMA_HOST=db
